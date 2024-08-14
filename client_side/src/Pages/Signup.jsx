@@ -30,7 +30,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/signup",
+        "https://secure-loginportal.onrender.com/api/user/signup",
         formData
       );
       console.log(response);
