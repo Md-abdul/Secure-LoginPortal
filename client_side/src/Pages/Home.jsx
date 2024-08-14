@@ -1,36 +1,11 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useContext, useState } from "react";
+import { UserContext } from "../context/UserContext";
+import { ToastContainer } from "react-toastify";
 
 const Home = () => {
-  const [users, setUsers] = useState([]);
+  const { users, loading, updateUser, deleteUser } = useContext(UserContext);
   const [editUserId, setEditUserId] = useState(null);
   const [formData, setFormData] = useState({});
-
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        "https://secure-loginportal.onrender.com/api/user/users"
-      );
-      setUsers(response.data);
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to fetch users.", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleChange = (e, id) => {
     const { name, value } = e.target;
@@ -43,47 +18,10 @@ const Home = () => {
     });
   };
 
-  const handleUpdate = async (id) => {
-    setLoading(true);
-    try {
-      const updatedUser = formData[id];
-      await axios.put(
-        `https://secure-loginportal.onrender.com/api/user/users/${id}`,
-        updatedUser
-      );
-      toast.success("User updated successfully!", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      fetchUsers();
-      setEditUserId(null);
-    } catch (error) {
-      toast.error("Failed to update user.", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    setLoading(true);
-    try {
-      await axios.delete(
-        `https://secure-loginportal.onrender.com/api/user/users/${id}`
-      );
-      toast.success("User deleted successfully!", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      fetchUsers();
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to delete user.", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleUpdate = (id) => {
+    const updatedUser = formData[id];
+    updateUser(id, updatedUser);
+    setEditUserId(null);
   };
 
   return (
@@ -202,7 +140,7 @@ const Home = () => {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(user._id)}
+                            onClick={() => deleteUser(user._id)}
                             className="btn btn-danger"
                           >
                             Delete
